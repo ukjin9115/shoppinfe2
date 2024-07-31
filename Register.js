@@ -1,3 +1,4 @@
+// src/components/Register.js
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Button from 'react-bootstrap/Button';
@@ -12,23 +13,27 @@ const Register = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const response = await fetch('http://localhost:8080/api/register', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        username,
-        password,
-        displayName,
-      }),
-    });
+    try {
+      const response = await fetch('http://localhost:8080/auth/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          username,
+          password,
+        }),
+      });
 
-    if (response.ok) {
-      // navigate('/login'); // 회원가입 성공 시 로그인 페이지로 이동
-      alert('회원가입에 성공했습니다.');
-      navigate('/login');
-    } else {
+      if (response.ok) {
+        alert('회원가입에 성공했습니다.');
+        navigate('/login'); // 회원가입 성공 시 로그인 페이지로 이동
+      } else {
+        const errorData = await response.text(); // JSON 형식이 아닐 수 있으므로 text()로 응답을 받음
+        alert(`회원가입에 실패했습니다: ${errorData}`);
+      }
+    } catch (error) {
+      console.error('회원가입 오류:', error);
       alert('회원가입에 실패했습니다.');
     }
   };
@@ -43,8 +48,8 @@ const Register = () => {
             placeholder="Enter user ID"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
+            required
           />
-          
         </Form.Group>
 
         <Form.Group className="mb-3" controlId="formBasicPassword">
@@ -54,21 +59,13 @@ const Register = () => {
             placeholder="Password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            required
           />
           <Form.Text className="text-muted">
             패스워드를 타인과 공유하지 마세요.
           </Form.Text>
         </Form.Group>
 
-        <Form.Group className="mb-3" controlId="formBasicDisplayName">
-          <Form.Label>닉네임</Form.Label>
-          <Form.Control
-            type="text"
-            placeholder="Display name"
-            value={displayName}
-            onChange={(e) => setDisplayName(e.target.value)}
-          />
-        </Form.Group>
 
         <Button variant="primary" type="submit">
           가입하기

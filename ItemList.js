@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Row from 'react-bootstrap/Row';
 import CardComponent from './CardComponent';
+import axios from 'axios';
 
 const ItemList = ({ searchText }) => {
   const [items, setItems] = useState([]);
@@ -9,14 +10,17 @@ const ItemList = ({ searchText }) => {
     fetchItems(searchText);
   }, [searchText]);
 
-  const fetchItems = (search = '') => {
+  const fetchItems = async (search = '') => {
     const url = search
       ? `http://localhost:8080/items?title=${search}`
       : 'http://localhost:8080/items';
-    fetch(url)
-      .then(response => response.json())
-      .then(data => setItems(data))
-      .catch(error => console.error('Error fetching data:', error));
+
+    try {
+      const response = await axios.get(url);
+      setItems(response.data);
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
   };
 
   return (
