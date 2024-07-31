@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 
 const CardComponent = ({ item, index }) => {
   const defaultImage = 'https://via.placeholder.com/150'; // Placeholder image
-  const imageUrl = item.filePath ? `http://localhost:8080/${item.filePath}` : defaultImage; // Correct URL format// Fallback to placeholder image
+  const imageUrl = item.filePath ? `http://localhost:8080/${item.filePath}` : defaultImage;
 
   const cardStyle = {
     position: 'relative',
@@ -43,6 +43,7 @@ const CardComponent = ({ item, index }) => {
           <div style={{ padding: '10px' }}>
             <h4 style={{ marginTop: '10px', fontSize: '1rem' }}>{item.title}</h4>
             <p style={{ margin: 0, fontWeight: 'bold' }}>{item.price.toLocaleString()}원</p>
+            <p>판매자: {item.author?.username}</p> {/* Display author information */}
           </div>
         </Link>
       </div>

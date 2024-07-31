@@ -34,7 +34,7 @@ const ItemDetail = () => {
     }
   }, []);
 
-  if (!item) return <div>그런아이템 없음</div>;
+  if (!item) return <div>그런 아이템 없음</div>;
 
   const defaultImage = 'https://via.placeholder.com/150';
   const imageUrl = item.filePath ? `http://localhost:8080/${item.filePath}` : defaultImage;
@@ -73,6 +73,7 @@ const ItemDetail = () => {
         <Col md={6}>
           <h2>{item.title}</h2>
           <p>{item.price}원</p>
+          <p>판매자: {item.author?.username}</p> {/* Display author information */}
           <button className="btn btn-danger">주문하기</button>
           <p>{item.description}</p>
 

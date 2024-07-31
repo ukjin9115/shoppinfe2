@@ -2,11 +2,10 @@ package ukgo.shop.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
-@Table
+@Table(name = "shop_items")
 @NoArgsConstructor
 @Data
 @Getter
@@ -23,13 +22,15 @@ public class ShopItem {
     @Column(nullable = false)
     private Integer price;
 
-
     @Lob
     private String description;
 
     @Column(updatable = false, insertable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private LocalDateTime createdAt;
 
-
     private String filePath;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User author; // Add this field
 }

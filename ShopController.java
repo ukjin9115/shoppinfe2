@@ -3,10 +3,14 @@ package ukgo.shop.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import ukgo.shop.entity.ShopItem;
+import ukgo.shop.entity.User;
 import ukgo.shop.repository.ItemRepository;
+import ukgo.shop.repository.UserRepository;
 
 import java.io.File;
 import java.io.IOException;
@@ -20,6 +24,9 @@ public class ShopController {
 
     @Autowired
     private ItemRepository itemRepository;
+
+    @Autowired
+    private UserRepository userRepository;
 
     private static final String UPLOAD_DIR = "C:/shopupload/";
 
@@ -39,11 +46,16 @@ public class ShopController {
             }
         }
 
+        // Get the currently logged-in user
+        String username = ((UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername();
+        User author = userRepository.findByUsername(username).orElse(null);
+
         ShopItem shopItem = new ShopItem();
         shopItem.setTitle(title);
         shopItem.setPrice(price);
         shopItem.setDescription(description);
         shopItem.setFilePath(filePath);
+        shopItem.setAuthor(author); // Set the author
 
         ShopItem savedShopItem = itemRepository.save(shopItem);
         return new ResponseEntity<>(savedShopItem, HttpStatus.CREATED);
