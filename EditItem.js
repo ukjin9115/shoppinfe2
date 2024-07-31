@@ -1,67 +1,74 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { useNavigate, useParams } from 'react-router-dom';
 import { Container, Form, Button } from 'react-bootstrap';
 
 const EditItem = () => {
-  const { id } = useParams();
-  const navigate = useNavigate();
   const [title, setTitle] = useState('');
   const [price, setPrice] = useState('');
-  const [publishDate, setPublishDate] = useState('');
   const [description, setDescription] = useState('');
+  const [file, setFile] = useState(null);
+  const [currentFile, setCurrentFile] = useState('');
+  const navigate = useNavigate();
+  const { id } = useParams();
 
   useEffect(() => {
     const fetchItem = async () => {
       try {
         const response = await axios.get(`http://localhost:8080/items/${id}`);
-        const item = response.data;
-        setTitle(item.title);
-        setPrice(item.price);
-        setPublishDate(item.publishDate);
-        setDescription(item.description);
+        const { title, price, description, filePath } = response.data;
+        setTitle(title);
+        setPrice(price);
+        setDescription(description);
+        setCurrentFile(filePath);
       } catch (error) {
-        console.error('Error fetching item:', error);
+        console.error('아이템을 불러오는 데 실패했습니다:', error);
       }
     };
-
     fetchItem();
   }, [id]);
+
+  const handleFileChange = (e) => {
+    setFile(e.target.files[0]);
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    const formData = new FormData();
+    if (file) {
+      formData.append('file', file);
+    }
+    formData.append('title', title);
+    formData.append('price', price);
+    formData.append('description', description);
+
     try {
-      const response = await axios.put(`http://localhost:8080/items/${id}`, {
-        title,
-        price: parseInt(price, 10),
-        publishDate,
-        description,
-      }, {
+      const response = await axios.put(`http://localhost:8080/items/${id}`, formData, {
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'multipart/form-data',
         },
       });
 
       if (response.status === 200) {
-        alert('아이템이 수정되었습니다!');
-        navigate(`/detail/${id}`);
+        alert('상품이 수정되었습니다!');
+        navigate('/'); // 상품 목록 페이지로 이동
       }
     } catch (error) {
-      console.error('아이템 수정 실패:', error);
-      alert('아이템 수정에 실패했습니다.');
+      console.error('상품 수정 실패:', error);
+      alert('상품 수정에 실패했습니다.');
     }
   };
 
   return (
     <Container className="my-4">
-      <h2>아이템 수정</h2>
+      <h2>상품 수정</h2>
       <Form onSubmit={handleSubmit}>
         <Form.Group controlId="formTitle">
           <Form.Label>제목</Form.Label>
           <Form.Control
             type="text"
-            placeholder="아이템 제목 입력"
+            placeholder="상품 제목 입력"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             required
@@ -72,10 +79,23 @@ const EditItem = () => {
           <Form.Label>가격</Form.Label>
           <Form.Control
             type="number"
-            placeholder="아이템 가격 입력"
+            placeholder="상품 가격 입력"
             value={price}
             onChange={(e) => setPrice(e.target.value)}
             required
+          />
+        </Form.Group>
+
+        <Form.Group controlId="formFile">
+          <Form.Label>이미지</Form.Label>
+          {currentFile && (
+            <div>
+              <img src={`http://localhost:8080/${currentFile}`} alt="Current file" style={{ width: '100px', height: '100px' }} />
+            </div>
+          )}
+          <Form.Control
+            type="file"
+            onChange={handleFileChange}
           />
         </Form.Group>
 
@@ -84,7 +104,7 @@ const EditItem = () => {
           <Form.Control
             as="textarea"
             rows={3}
-            placeholder="아이템 설명 입력"
+            placeholder="상품 설명 입력"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
           />

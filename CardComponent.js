@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 
 const CardComponent = ({ item, index }) => {
   const defaultImage = 'https://via.placeholder.com/150'; // Placeholder image
-  const imageUrl = item.imageUrl || defaultImage; // Fallback to placeholder image
+  const imageUrl = item.filePath ? `http://localhost:8080/${item.filePath}` : defaultImage; // Correct URL format// Fallback to placeholder image
 
   const cardStyle = {
     position: 'relative',

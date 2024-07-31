@@ -6,22 +6,27 @@ import { Container, Form, Button } from 'react-bootstrap';
 const AddItem = () => {
   const [title, setTitle] = useState('');
   const [price, setPrice] = useState('');
-  const [publishDate, setPublishDate] = useState('');
   const [description, setDescription] = useState('');
+  const [file, setFile] = useState(null);
   const navigate = useNavigate();
+
+  const handleFileChange = (e) => {
+    setFile(e.target.files[0]);
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('title', title);
+    formData.append('price', price);
+    formData.append('description', description);
+
     try {
-      const response = await axios.post('http://localhost:8080/items', {
-        title,
-        price: parseInt(price, 10),
-        publishDate,
-        description,
-      }, {
+      const response = await axios.post('http://localhost:8080/items', formData, {
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'multipart/form-data',
         },
       });
 
@@ -61,7 +66,14 @@ const AddItem = () => {
           />
         </Form.Group>
 
-       
+        <Form.Group controlId="formFile">
+          <Form.Label>이미지</Form.Label>
+          <Form.Control
+            type="file"
+            onChange={handleFileChange}
+          />
+        </Form.Group>
+
         <Form.Group controlId="formDescription">
           <Form.Label>설명</Form.Label>
           <Form.Control

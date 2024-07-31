@@ -20,7 +20,7 @@ const ItemDetail = () => {
   if (!item) return <div>그런아이템 없음</div>;
 
   const defaultImage = 'https://via.placeholder.com/150';
-  const imageUrl = item.filePath ? `http://localhost:8080/uploads/${item.filePath}` : defaultImage;
+  const imageUrl = item.filePath ? `http://localhost:8080/${item.filePath}` : defaultImage; // Correct URL format
   const imageStyle = {
     width: '400px',
     height: '400px',

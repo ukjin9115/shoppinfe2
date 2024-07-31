@@ -11,7 +11,7 @@ const ItemList = ({ searchText }) => {
 
   const fetchItems = (search = '') => {
     const url = search
-      ? 'http://localhost:8080/items?title=${search}'
+      ? `http://localhost:8080/items?title=${search}`
       : 'http://localhost:8080/items';
     fetch(url)
       .then(response => response.json())
