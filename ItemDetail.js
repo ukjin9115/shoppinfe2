@@ -28,6 +28,7 @@ const ItemDetail = () => {
     // Check if user is logged in
     const token = localStorage.getItem('token');
     if (token) {
+      console.log(`'현재보유중인토큰':${token}`);
       setIsLoggedIn(true);
     } else {
       setIsLoggedIn(false);

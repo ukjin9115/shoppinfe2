@@ -1,7 +1,9 @@
-import React, { useState, useEffect } from 'react';
+// src/components/EditItem.js
+import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Container, Form, Button } from 'react-bootstrap';
+import { AuthContext } from '../contexts/AuthContext';
 
 const EditItem = () => {
   const [title, setTitle] = useState('');
@@ -9,17 +11,9 @@ const EditItem = () => {
   const [description, setDescription] = useState('');
   const [file, setFile] = useState(null);
   const [currentFile, setCurrentFile] = useState('');
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const { isLoggedIn } = useContext(AuthContext);
   const navigate = useNavigate();
   const { id } = useParams();
-
-  useEffect(() => {
-    const checkLoginStatus = () => {
-      const token = localStorage.getItem('token');
-      setIsLoggedIn(!!token); // 로그인 여부 확인
-    };
-    checkLoginStatus();
-  }, []);
 
   useEffect(() => {
     const fetchItem = async () => {
@@ -55,7 +49,7 @@ const EditItem = () => {
       const response = await axios.put(`http://localhost:8080/items/${id}`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
-          Authorization: `Bearer ${localStorage.getItem('token')}`, // 토큰을 헤더에 추가
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
         },
       });
 
