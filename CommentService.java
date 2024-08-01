@@ -11,6 +11,7 @@ import ukgo.shop.repository.ItemRepository;
 import ukgo.shop.repository.UserRepository;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class CommentService {
@@ -25,12 +26,15 @@ public class CommentService {
     private UserRepository userRepository;
 
     @Transactional(readOnly = true)
-    public List<Comment> getCommentsByItemId(Integer itemId) {
-        return commentRepository.findByItemId(itemId);
+    public List<CommentDTO> getCommentsByItemId(Integer itemId) {
+        List<Comment> comments = commentRepository.findByItemId(itemId);
+        return comments.stream()
+                .map(comment -> new CommentDTO(comment.getId(), comment.getContent(), comment.getAuthor().getUsername()))
+                .collect(Collectors.toList());
     }
 
     @Transactional
-    public Comment createComment(Integer itemId, Long userId, String content) {
+    public CommentDTO createComment(Integer itemId, Long userId, String content) {
         ShopItem item = itemRepository.findById(itemId).orElseThrow(() -> new RuntimeException("Item not found"));
         User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
 
@@ -39,14 +43,16 @@ public class CommentService {
         comment.setItem(item);
         comment.setAuthor(user);
 
-        return commentRepository.save(comment);
+        Comment savedComment = commentRepository.save(comment);
+        return new CommentDTO(savedComment.getId(), savedComment.getContent(), savedComment.getAuthor().getUsername());
     }
 
     @Transactional
-    public Comment updateComment(Integer commentId, String content) {
+    public CommentDTO updateComment(Integer commentId, String content) {
         Comment comment = commentRepository.findById(commentId).orElseThrow(() -> new RuntimeException("Comment not found"));
         comment.setContent(content);
-        return commentRepository.save(comment);
+        Comment updatedComment = commentRepository.save(comment);
+        return new CommentDTO(updatedComment.getId(), updatedComment.getContent(), updatedComment.getAuthor().getUsername());
     }
 
     @Transactional

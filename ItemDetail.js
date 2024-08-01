@@ -5,6 +5,7 @@ import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row';
 import Button from 'react-bootstrap/Button';
 import axios from 'axios';
+import Alert from 'react-bootstrap/Alert';
 
 const ItemDetail = () => {
   const { id } = useParams();
@@ -27,10 +28,8 @@ const ItemDetail = () => {
   }, [id]);
 
   useEffect(() => {
-    // Check if user is logged in
     const token = localStorage.getItem('token');
     if (token) {
-      console.log(`'현재보유중인토큰':${token}`);
       setIsLoggedIn(true);
     } else {
       setIsLoggedIn(false);
@@ -52,15 +51,13 @@ const ItemDetail = () => {
   const handleAddComment = async () => {
     const token = localStorage.getItem('token');
     try {
-      await axios.post(`http://localhost:8080/comments/create/${id}`, { content: newComment }, {
+      const response = await axios.post(`http://localhost:8080/comments/create/${id}`, { content: newComment }, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
       setNewComment("");
-      // Fetch comments again
-      const response = await axios.get(`http://localhost:8080/comments/item/${id}`);
-      setComments(response.data);
+      setComments([...comments, response.data]); // Add new comment to state
     } catch (error) {
       console.error('Error adding comment:', error);
     }
@@ -74,9 +71,7 @@ const ItemDetail = () => {
           Authorization: `Bearer ${token}`,
         },
       });
-      // Fetch comments again
-      const response = await axios.get(`http://localhost:8080/comments/item/${id}`);
-      setComments(response.data);
+      setComments(comments.filter(comment => comment.id !== commentId)); // Remove deleted comment from state
     } catch (error) {
       console.error('Error deleting comment:', error);
     }
@@ -100,7 +95,19 @@ const ItemDetail = () => {
           Authorization: `Bearer ${token}`,
         },
       });
-      alert('아이템이 삭제되었습니다.');
+      <Alert variant="success">
+      <Alert.Heading>아이템추가 성공!</Alert.Heading>
+      <p>
+        Aww yeah, you successfully read this important alert message. This
+        example text is going to run a bit longer so that you can see how
+        spacing within an alert works with this kind of content.
+      </p>
+      <hr />
+      <p className="mb-0">
+        Whenever you need to, be sure to use margin utilities to keep things
+        nice and tidy.
+      </p>
+    </Alert>
       navigate('/');
     } catch (error) {
       console.error('Error deleting item:', error);
@@ -145,6 +152,7 @@ const ItemDetail = () => {
           <ul>
             {comments.map(comment => (
               <li key={comment.id}>
+                <strong>{comment.username}: </strong>
                 {comment.content}
                 {isLoggedIn && (
                   <Button variant="danger" size="sm" onClick={() => handleDeleteComment(comment.id)}> 삭제</Button>

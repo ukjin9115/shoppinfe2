@@ -11,6 +11,8 @@ import Register from './components/Register';
 import Login from './components/Login';
 import AddItem from './components/AddItem';
 import EditItem from './components/EditItem';
+import { Button } from 'react-bootstrap';
+import { useNavigate } from 'react-router-dom';
 import './App.css';
 
 function App() {
@@ -18,6 +20,7 @@ function App() {
   const handleSearch = (search) => {
     setSearchText(search);
   };
+  const navigate = useNavigate();
 
   const location = useLocation();
   const hideComponents = ['/register'].includes(location.pathname);
@@ -28,8 +31,9 @@ function App() {
         <NavbarComponent />
         {!hideComponents && <div className="main-bg"></div>}
         {!hideComponents && <SearchBar onSearch={handleSearch} />}
-        
-        <Container>
+        <Button variant="success" style={{marginLeft: "80%"}}
+         onClick={() => navigate('/add-item')}>판매하기</Button>{' '}
+        <Container style={{marginTop:"30px"}}>
           <Routes>
             <Route path="/" element={<ItemList searchText={searchText} />} />
             <Route path="/detail/:id" element={<ItemDetail />} />

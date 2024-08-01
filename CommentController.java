@@ -10,7 +10,9 @@ import org.springframework.web.bind.annotation.*;
 import ukgo.shop.entity.Comment;
 import ukgo.shop.entity.User;
 import ukgo.shop.repository.UserRepository;
+import ukgo.shop.service.CommentDTO;
 import ukgo.shop.service.CommentService;
+import java.util.Map;
 
 import java.util.List;
 
@@ -22,32 +24,34 @@ public class CommentController {
     private CommentService commentService;
 
     @Autowired
-    private UserRepository userRepository; // UserRepository 주입
+    private UserRepository userRepository;
 
     @GetMapping("/item/{itemId}")
-    public ResponseEntity<List<Comment>> getCommentsByItemId(@PathVariable Integer itemId) {
-        List<Comment> comments = commentService.getCommentsByItemId(itemId);
+    public ResponseEntity<List<CommentDTO>> getCommentsByItemId(@PathVariable Integer itemId) {
+        List<CommentDTO> comments = commentService.getCommentsByItemId(itemId);
         return new ResponseEntity<>(comments, HttpStatus.OK);
     }
 
     @PostMapping("/create/{itemId}")
-    public ResponseEntity<Comment> createComment(@PathVariable Integer itemId, @RequestBody String content) {
+    public ResponseEntity<CommentDTO> createComment(@PathVariable Integer itemId, @RequestBody Map<String, String> requestBody) {
+        String content = requestBody.get("content");
         String username = ((UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername();
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + username));
 
-        Comment comment = commentService.createComment(itemId, user.getId(), content);
-        return new ResponseEntity<>(comment, HttpStatus.CREATED);
+        CommentDTO commentDTO = commentService.createComment(itemId, user.getId(), content);
+        return new ResponseEntity<>(commentDTO, HttpStatus.CREATED);
     }
 
     @PutMapping("/{commentId}")
-    public ResponseEntity<Comment> updateComment(@PathVariable Integer commentId, @RequestBody String content) {
+    public ResponseEntity<CommentDTO> updateComment(@PathVariable Integer commentId, @RequestBody Map<String, String> requestBody) {
+        String content = requestBody.get("content");
         String username = ((UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername();
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + username));
 
-        Comment comment = commentService.updateComment(commentId, content);
-        return new ResponseEntity<>(comment, HttpStatus.OK);
+        CommentDTO commentDTO = commentService.updateComment(commentId, content);
+        return new ResponseEntity<>(commentDTO, HttpStatus.OK);
     }
 
     @DeleteMapping("/{commentId}")
