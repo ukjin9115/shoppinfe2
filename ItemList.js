@@ -12,7 +12,7 @@ const ItemList = ({ searchText }) => {
 
   const fetchItems = async (search = '') => {
     const url = search
-      ? `http://localhost:8080/items?title=${search}`
+      ? `http://localhost:8080/items/search?title=${encodeURIComponent(search)}`
       : 'http://localhost:8080/items';
 
     try {

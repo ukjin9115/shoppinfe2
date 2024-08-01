@@ -8,15 +8,14 @@ const CardComponent = ({ item, index }) => {
 
   const cardStyle = {
     position: 'relative',
-    border: '1px solid #eaeaea',
     borderRadius: '4px',
     overflow: 'hidden',
     marginBottom: '20px',
   };
 
   const imageStyle = {
-    width: '200px',
-    height: '200px',
+    width: '340px',
+    height: '300px',
     objectFit: 'cover',
   };
 
@@ -41,9 +40,9 @@ const CardComponent = ({ item, index }) => {
           <div style={numberStyle}>{index + 1}</div>
           <img src={imageUrl} alt={item.title} style={imageStyle} />
           <div style={{ padding: '10px' }}>
-            <h4 style={{ marginTop: '10px', fontSize: '1rem' }}>{item.title}</h4>
+            <h4 style={{ marginTop: '10px', fontSize: '1.3rem' }}>{item.title}</h4>
             <p style={{ margin: 0, fontWeight: 'bold' }}>{item.price.toLocaleString()}원</p>
-            <p>판매자: {item.author?.username}</p> {/* Display author information */}
+            <p style={{marginTop:'15px'}}>판매자: {item.author?.username}</p> {/* Display author information */}
           </div>
         </Link>
       </div>

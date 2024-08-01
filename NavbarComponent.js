@@ -16,7 +16,7 @@ const NavbarComponent = () => {
   };
 
   return (
-    <Navbar bg="dark" variant="dark">
+    <Navbar bg="dark" variant="dark" className="sticky-navbar">
       <Container>
         <Navbar.Brand href="/">욱진Mall</Navbar.Brand>
         <Nav className="me-auto">

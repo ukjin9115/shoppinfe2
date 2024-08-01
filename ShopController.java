@@ -126,4 +126,10 @@ public class ShopController {
         itemRepository.deleteById(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<ShopItem>> searchItems(@RequestParam("title") String title) {
+        List<ShopItem> items = itemRepository.searchItems(title);
+        return new ResponseEntity<>(items, HttpStatus.OK);
+    }
 }

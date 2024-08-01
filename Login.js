@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 
+
 const Login = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -67,6 +68,8 @@ const Login = () => {
         <Button variant="primary" type="submit">
           로그인
         </Button>
+        <Button variant="dark" onClick={() => navigate('/register')}>회원가입</Button>
+        
       </Form>
     </div>
   );
