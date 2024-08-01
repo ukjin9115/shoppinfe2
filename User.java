@@ -19,4 +19,9 @@ public class User {
 
     @Column(nullable = false)
     private String password;
+
+    // getId 메서드 추가
+    public Long getId() {
+        return id;
+    }
 }

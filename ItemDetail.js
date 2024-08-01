@@ -10,6 +10,8 @@ const ItemDetail = () => {
   const { id } = useParams();
   const [item, setItem] = useState(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [comments, setComments] = useState([]);
+  const [newComment, setNewComment] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -34,6 +36,51 @@ const ItemDetail = () => {
       setIsLoggedIn(false);
     }
   }, []);
+
+  useEffect(() => {
+    const fetchComments = async () => {
+      try {
+        const response = await axios.get(`http://localhost:8080/comments/item/${id}`);
+        setComments(response.data);
+      } catch (error) {
+        console.error('Error fetching comments:', error);
+      }
+    };
+    fetchComments();
+  }, [id]);
+
+  const handleAddComment = async () => {
+    const token = localStorage.getItem('token');
+    try {
+      await axios.post(`http://localhost:8080/comments/create/${id}`, { content: newComment }, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      setNewComment("");
+      // Fetch comments again
+      const response = await axios.get(`http://localhost:8080/comments/item/${id}`);
+      setComments(response.data);
+    } catch (error) {
+      console.error('Error adding comment:', error);
+    }
+  };
+
+  const handleDeleteComment = async (commentId) => {
+    const token = localStorage.getItem('token');
+    try {
+      await axios.delete(`http://localhost:8080/comments/${commentId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      // Fetch comments again
+      const response = await axios.get(`http://localhost:8080/comments/item/${id}`);
+      setComments(response.data);
+    } catch (error) {
+      console.error('Error deleting comment:', error);
+    }
+  };
 
   if (!item) return <div>그런 아이템 없음</div>;
 
@@ -84,6 +131,27 @@ const ItemDetail = () => {
               <Button variant="danger" onClick={handleDelete}>🗑️ 삭제</Button>
             </>
           )}
+
+          <h3>댓글</h3>
+          <div>
+            <textarea
+              value={newComment}
+              onChange={(e) => setNewComment(e.target.value)}
+              rows="4"
+              cols="50"
+            />
+            <Button variant="primary" onClick={handleAddComment}>댓글 작성</Button>
+          </div>
+          <ul>
+            {comments.map(comment => (
+              <li key={comment.id}>
+                {comment.content}
+                {isLoggedIn && (
+                  <Button variant="danger" size="sm" onClick={() => handleDeleteComment(comment.id)}> 삭제</Button>
+                )}
+              </li>
+            ))}
+          </ul>
         </Col>
       </Row>
     </Container>

@@ -22,12 +22,11 @@ public class WebSecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        // 인증 없이 접근할 수 있는 요청
-                        .requestMatchers("/auth/**", "/uploads/**", "/items", "/items/{id}").permitAll()
+                        .requestMatchers("/auth/**", "/uploads/**", "/items", "/items/{id}", "/comments/item/**").permitAll()
 
                         // 인증이 필요한 요청
                         .requestMatchers("/items/create", "/items/update/**", "/items/delete/**").authenticated()
-
+                        .requestMatchers("/comments/create/**", "/comments/update/**", "/comments/delete/**").authenticated()
                         // 나머지 요청은 인증 필요
                         .anyRequest().authenticated()
                 )
