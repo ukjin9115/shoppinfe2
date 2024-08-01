@@ -130,7 +130,7 @@ const ItemDetail = () => {
           </Col>
           <Col md={6}>
             <h2>{item.title}</h2>
-            <p>{item.price}원</p>
+            <p>{item.price.toLocaleString()}원</p>
             <p>판매자: {item.author?.username}</p>
             
             <p>{item.description}</p>

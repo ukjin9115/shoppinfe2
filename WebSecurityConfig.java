@@ -23,11 +23,9 @@ public class WebSecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/**", "/uploads/**", "/items", "/items/{id}", "/comments/item/**").permitAll()
-
-                        // 인증이 필요한 요청
                         .requestMatchers("/items/create", "/items/update/**", "/items/delete/**").authenticated()
                         .requestMatchers("/comments/create/**", "/comments/update/**", "/comments/delete/**").authenticated()
-                        // 나머지 요청은 인증 필요
+                        .requestMatchers("/orders/**").authenticated() // 새로운 엔드포인트 추가
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session

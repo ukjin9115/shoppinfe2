@@ -1,5 +1,5 @@
 // src/components/NavbarComponent.js
-import React, { useContext ,useState} from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
@@ -9,10 +9,23 @@ import { AuthContext } from '../contexts/AuthContext';
 const NavbarComponent = () => {
   const { isLoggedIn, logout } = useContext(AuthContext);
   const navigate = useNavigate();
+  const [currentIsLoggedIn, setCurrentIsLoggedIn] = useState(isLoggedIn);
+
+  useEffect(() => {
+    setCurrentIsLoggedIn(isLoggedIn);
+  }, [isLoggedIn]);
 
   const handleLogout = () => {
     logout();
     navigate('/login');
+  };
+
+  const handleOrderHistoryClick = () => {
+    if (currentIsLoggedIn) {
+      navigate('/order-history');
+    } else {
+      navigate('/login');
+    }
   };
 
   return (
@@ -22,9 +35,11 @@ const NavbarComponent = () => {
         <Nav className="me-auto">
           <Nav.Link onClick={() => navigate('/')}>Home</Nav.Link>
           <Nav.Link href="#features">Features</Nav.Link>
-          <Nav.Link href="#pricing">Pricing</Nav.Link>
+          {currentIsLoggedIn && (
+            <Nav.Link onClick={handleOrderHistoryClick}>주문내역</Nav.Link>
+          )}
         </Nav>
-        {isLoggedIn ? (
+        {currentIsLoggedIn ? (
           <Nav>
             <Nav.Link onClick={handleLogout}>로그아웃</Nav.Link>
           </Nav>

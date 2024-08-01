@@ -1,6 +1,6 @@
 // src/components/OrderPage.js
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
@@ -10,6 +10,7 @@ import axios from 'axios';
 
 const OrderPage = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [item, setItem] = useState(null);
   const [quantity, setQuantity] = useState(1);
   const [totalPrice, setTotalPrice] = useState(0);
@@ -35,8 +36,19 @@ const OrderPage = () => {
   };
 
   const handleOrder = async () => {
-    // Handle order logic here
-    console.log('Order placed:', { itemId: id, quantity });
+    try {
+      const token = localStorage.getItem('token'); // Assuming you store the JWT in localStorage
+      const response = await axios.post(
+        'http://localhost:8080/orders/create',
+        { itemId: id, quantity },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      alert('주문이 접수되었습니다.');
+      navigate('/order-history'); // Redirect to the order history page
+    } catch (error) {
+      console.error('Error placing order:', error);
+      alert('주문접수에 실패했습니다.');
+    }
   };
 
   if (!item) return <div>Loading...</div>;
@@ -60,7 +72,7 @@ const OrderPage = () => {
                 onChange={handleQuantityChange}
               />
             </Form.Group>
-            <h4>총 금액: {totalPrice}원</h4>
+            <h4>총 금액: {totalPrice.toLocaleString()}원</h4>
             <Button variant="primary" onClick={handleOrder}>주문하기</Button>
           </Form>
         </Col>

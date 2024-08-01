@@ -1,14 +1,15 @@
 // src/components/Login.js
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
-
+import { AuthContext } from '../contexts/AuthContext';
 
 const Login = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
+  const { login } = useContext(AuthContext);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -19,16 +20,13 @@ const Login = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          username,
-          password
-        }),
+        body: JSON.stringify({ username, password }),
       });
 
       if (response.ok) {
         const { token } = await response.json();
-        localStorage.setItem('token', token); // JWT 토큰 저장
-        alert('로그인 성공');
+        login(token); // 로그인 상태 업데이트
+        alert('로그인 성공!')
         navigate('/'); // 로그인 성공 시 홈 페이지로 이동
       } else {
         const errorData = await response.text(); // JSON 형식이 아닐 수 있으므로 text()로 응답을 받음
@@ -69,7 +67,6 @@ const Login = () => {
           로그인
         </Button>
         <Button variant="dark" onClick={() => navigate('/register')}>회원가입</Button>
-        
       </Form>
     </div>
   );
